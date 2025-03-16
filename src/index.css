@@ -13,4 +13,33 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+body{
+  margin: 0;
+}
 
+.leaflet-control-scale .leaflet-control-scale-line {
+  color: white;
+  background: none;
+  text-shadow: none;
+  border-color: white;
+  border-left: none;
+  border-right: none;
+}
+
+.leaflet-control-scale .leaflet-control-scale-line::before{
+  content:  '';
+  border-left:2px solid white;
+  height: 8px;
+  position:absolute;
+  bottom:0;
+  left:0;
+}
+
+.leaflet-control-scale .leaflet-control-scale-line::after{
+  content:  '';
+  border-left:2px solid white;
+  height: 8px;
+  position:absolute;
+  bottom:0;
+  right:0;
+}

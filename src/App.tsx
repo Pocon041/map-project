@@ -1,8 +1,26 @@
 import React, { useEffect, useRef, useState } from "react";
-import L, { Marker, popup } from "leaflet";
+import L, { Control, Marker, popup } from "leaflet";
 export default function App() {
   const mapRef=useRef<HTMLDivElement>(null);
   const [latLng, setLatLng] = useState<{ lat: number; lng: number } | null>(null);
+
+  const createLatLngControl = (): Control => {
+    const latLngControl = L.Control.extend({
+      options: {
+        position: "bottomright",
+      },
+      onAdd: function () {
+        const div = L.DomUtil.create("div", "lat-lng-control");
+        div.style.padding = "5px";
+        div.style.borderRadius = "5px";
+        div.innerHTML = latLng
+          ? `(陈中浩)经度: ${latLng.lng.toFixed(4)} , 纬度: ${latLng.lat.toFixed(4)}`
+          : "移动鼠标获取经纬度";
+        return div;
+      },
+    });
+    return new latLngControl();
+  };
 
   useEffect(()=>{
     if(mapRef.current){
@@ -26,32 +44,16 @@ export default function App() {
         }
       ).addTo(map);
       
-      var popup = L.popup();
       
-      function onMapClick(e:any){
-        popup
-          .setLatLng(e.latlng)
-          .setContent("You clicked the map at " + e.latlng.toString())
-          .openOn(map);
-        setLatLng(e.latlng); // 更新经纬度状态
+      const latLngControl = createLatLngControl();
+      latLngControl.addTo(map);
+      function onMapMove(e:any){
+        setLatLng({ lat: e.latlng.lat, lng: e.latlng.lng }); // 更新经纬度状态
         //L.marker(e.latlng).addTo(map);
+        latLngControl.getContainer().innerHTML = `(陈中浩)经度: ${e.latlng.lng.toFixed(4)} , 纬度: ${e.latlng.lat.toFixed(4)}`;
       }
 
-      // 创建自定义控件
-      const latLngControl = L.control.zoom({ position: 'bottomright' });
-
-      latLngControl.onAdd = function () {
-        const div = L.DomUtil.create('div', 'lat-lng-control');
-        div.style.backgroundColor = 'white';
-        div.style.padding = '10px';
-        div.style.borderRadius = '5px';
-        div.innerHTML = latLng ? `经度: ${latLng.lng.toFixed(4)}<br />纬度: ${latLng.lat.toFixed(4)}` : '点击地图获取经纬度';
-        return div;
-      };
-
-      latLngControl.addTo(map);
-
-      map.on('click', onMapClick);
+      map.on('mousemove', onMapMove);
     }
   },[]);
   

@@ -34,6 +34,13 @@ export default function App() {
           position:"bottomright",
         })
         .addTo(map);
+      
+      const attributionControl = L.control
+      .attribution({
+        position:"bottomright",
+        prefix:"陈中浩 | 移动鼠标以获得坐标"
+      })
+      .addTo(map);
 
       L.control.zoom({position:'bottomright'}).addTo(map);
 
@@ -51,12 +58,16 @@ export default function App() {
         setLatLng({ lat: e.latlng.lat, lng: e.latlng.lng }); // 更新经纬度状态
         //L.marker(e.latlng).addTo(map);
         latLngControl.getContainer().innerHTML = `(陈中浩)经度: ${e.latlng.lng.toFixed(4)} , 纬度: ${e.latlng.lat.toFixed(4)}`;
+        attributionControl.setPrefix(`陈中浩 | 经度: ${e.latlng.lng.toFixed(4)} , 纬度: ${e.latlng.lat.toFixed(4)}`);
       }
 
       map.on('mousemove', onMapMove);
     }
+
+    
   },[]);
-  
+
+    
   
   return <div ref={mapRef} style={{height:"100vh"}}></div>;
 }

@@ -52,20 +52,24 @@ export default function App() {
       ).addTo(map);
       
       
-      const latLngControl = createLatLngControl();
-      latLngControl.addTo(map);
+      //const latLngControl = createLatLngControl();
+      //latLngControl.addTo(map);
       function onMapMove(e:any){
         setLatLng({ lat: e.latlng.lat, lng: e.latlng.lng }); // 更新经纬度状态
         //L.marker(e.latlng).addTo(map);
-        latLngControl.getContainer().innerHTML = `(陈中浩)经度: ${e.latlng.lng.toFixed(4)} , 纬度: ${e.latlng.lat.toFixed(4)}`;
+        //latLngControl.getContainer().innerHTML = `(陈中浩)经度: ${e.latlng.lng.toFixed(4)} , 纬度: ${e.latlng.lat.toFixed(4)}`;
         attributionControl.setPrefix(`陈中浩 | 经度: ${e.latlng.lng.toFixed(4)} , 纬度: ${e.latlng.lat.toFixed(4)}`);
       }
 
       map.on('mousemove', onMapMove);
-    }
 
-    
+      return() =>{
+        map.off('mousemove',onMapMove);
+        map.remove();
+      }
+    }
   },[]);
+  
 
     
   

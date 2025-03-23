@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import L, { Control, map, Marker, popup } from "leaflet";
 import Location from "./components/Location.tsx"
+import store from "./store/index.ts"
+
 export default function App() {
   const mapRef=useRef<HTMLDivElement>(null);
   const [latLng, setLatLng] = useState<{ lat: number; lng: number } | null>(null);
@@ -13,7 +15,7 @@ export default function App() {
         zoomControl:false,
         attributionControl:false
       }).setView([36,120],7);
-      map.current = _map;
+      store.setMap(_map);
       setMapReady(true);
 
       L.control
@@ -60,7 +62,7 @@ export default function App() {
   return (
     <div className="relative">
       <div ref={mapRef} className="z-10 h-svh"></div>
-      {mapReady && <Location map = {map.current!}/> }
+      {mapReady && <Location /> }
     </div>
     
   );

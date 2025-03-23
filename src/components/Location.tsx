@@ -21,7 +21,7 @@ const Location = observer(() => {
     };
 
     return (
-        <div className="absolute z-20 bg-[#1191cc] bottom-4 left-4 py-2 px-4">
+        <div className="absolute z-20 text-white bottom-0.5 text-sm right-0.5 py-2 px-4">
             {position}
         </div>
     );

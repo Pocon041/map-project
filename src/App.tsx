@@ -5,11 +5,12 @@ import store from "./store/index.ts"
 
 export default function App() {
   const mapRef=useRef<HTMLDivElement>(null);
-  const [latLng, setLatLng] = useState<{ lat: number; lng: number } | null>(null);
+  //const [latLng, setLatLng] = useState<{ lat: number; lng: number } | null>(null);
   const [mapReady,setMapReady] = useState(false);
   const map = useRef<L.Map>(null);
 
   useEffect(()=>{
+    getTempData();
     if(mapRef.current){
       const _map=L.map(mapRef.current,{
         zoomControl:false,
@@ -24,13 +25,6 @@ export default function App() {
           position:"bottomright",
         })
         .addTo(_map);
-      
-      const attributionControl = L.control
-      .attribution({
-        position:"bottomright",
-        prefix:"陈中浩 | 移动鼠标以获得坐标"
-      })
-      .addTo(_map);
 
       L.control.zoom({position:'bottomright'}).addTo(_map);
 
@@ -41,23 +35,15 @@ export default function App() {
         }
       ).addTo(_map);
       
-      
-      //const latLngControl = createLatLngControl();
-      //latLngControl.addTo(map);
-      function onMapMove(e:any){
-        setLatLng({ lat: e.latlng.lat, lng: e.latlng.lng }); // 更新经纬度状态
-        attributionControl.setPrefix(`陈中浩 | 经度: ${e.latlng.lng.toFixed(4)} , 纬度: ${e.latlng.lat.toFixed(4)}`);
-      }
-
-      _map.on('mousemove', onMapMove);
-
       return() =>{
-        _map.off('mousemove',onMapMove);
         _map.remove();
       }
     }
   },[]);
   
+  const getTempData = async()=>{
+    await fetch("/temp1.json");
+  };
 
   return (
     <div className="relative">

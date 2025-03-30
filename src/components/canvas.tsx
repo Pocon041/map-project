@@ -1,7 +1,6 @@
-// CanvasOverlay.tsx
 import React, { useEffect, useRef } from "react";
 import L, { LatLngBoundsExpression, Map } from "leaflet";
-import store from "./store/index.ts";
+import store from "../store/index.ts";
 import { observer } from "mobx-react-lite";
 
 

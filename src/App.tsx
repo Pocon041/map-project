@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import L, { Control, imageOverlay, map, Marker, popup } from "leaflet";
 import Location from "./components/Location.tsx"
 import store from "./store/index.ts"
-import CanvasOverlay from "./canvas.tsx";
+import CanvasOverlay from "./components/canvas.tsx";
 
 export default function App() {
   const mapRef=useRef<HTMLDivElement>(null);

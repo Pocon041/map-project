@@ -26,7 +26,7 @@ export default function Colorbar(Props:ColorProps){
         <div className='text-lg py-1'>{Props.unit}</div>
         <div className="absolute left-6 bottom-[175px]">{range.min}</div>
         {colorDom}
-        <div className="absolute left-6 bottom-0">{range.min}</div>
+        <div className="absolute left-6 bottom-0">{range.max}</div>
     </div>
     );
 }

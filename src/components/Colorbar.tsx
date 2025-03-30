@@ -16,23 +16,24 @@ export default function Colorbar(Props:ColorProps){
     const colorDom:JSX.Element = (
     <div className='flex flex-col'>
         {colors.map((el) => (
-            <div key={el} style = {{background:el}} className='h-0.5 w-3'></div>
+            <div key={el} style = {{background:el}} className='h-0.5 w-4'></div>
         ))}
     </div>
     );
 
     return (
     <div className='absolute left-5 bottom-5 z-20 text-white'>
-        <div>{range.min}</div>
+        <div className='text-lg py-1'>{Props.unit}</div>
+        <div className="absolute left-6 bottom-[175px]">{range.min}</div>
         {colorDom}
-        <div>{range.max}</div>
+        <div className="absolute left-6 bottom-0">{range.min}</div>
     </div>
-    )
-    
+    );
 }
 
 type ColorProps = {
     range: Range;
+    unit:string
 };
 
 export type Range = {

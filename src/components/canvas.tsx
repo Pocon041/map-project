@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import L, { LatLngBoundsExpression, Map } from "leaflet";
 import store from "../store/index.ts";
 import { observer } from "mobx-react-lite";
@@ -8,6 +8,8 @@ const CanvasOverlay = observer(() => {
   const map = store.map;
   const layer = useRef<L.ImageOverlay>(null);
   const range:Range = {min:"0",max:"1"}
+  const [unit,setunit] = useState("mg/ml");
+
   const renderCanvas = async () => {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d")!;
@@ -41,7 +43,7 @@ const CanvasOverlay = observer(() => {
     }
   }, []);
   
-  return <Colorbar range = {range}></Colorbar>; 
+  return <Colorbar range = {range} unit = {unit}></Colorbar>; 
 });
 
 type FieldData = {

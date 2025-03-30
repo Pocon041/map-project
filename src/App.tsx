@@ -13,7 +13,7 @@ export default function App() {
       const _map=L.map(mapRef.current,{
         zoomControl:false,
         attributionControl:false
-      }).setView([36,120],7);
+      }).setView([36,120],5);
       store.setMap(_map);
       //renderCanvas(_map);
       setMapReady(true);
@@ -40,39 +40,6 @@ export default function App() {
     }
   },[]);
   
-/*
-  const getTempData = async()=>{
-    const tempData: FieldData = await fetch("/temp1.json").then((res)=>
-      res.json()
-    );
-    console.log(tempData);
-  };
-*/
-
-/*
-  const renderCanvas = async(map:L.Map)=>{
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext('2d')!;
-    ctx.fillStyle = "rgb(255,0,0)";
-    ctx.fillRect(10,10,55,50);
-    const url = canvas.toDataURL("png");
-    console.log(url);
-
-    const tempData: FieldData = await fetch("/temp1.json").then((res)=>res.json());
-
-    const imageBounds =L.latLngBounds([
-      [tempData.yllcorner,tempData.xllcorner],
-      [
-        tempData.yllcorner+tempData.nrows*tempData.cellsize,
-        tempData.xllcorner+tempData.ncols*tempData.cellsize,
-      ]
-    ]);
-
-    const layer = L.imageOverlay(url,imageBounds).addTo(map);
-    console.log(layer);
-  }
-*/
-
   return (
     <div className="relative">
       <div ref={mapRef} className="z-10 h-svh"></div>

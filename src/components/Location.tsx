@@ -17,7 +17,7 @@ const Location = observer(() => {
     }, [map]);
 
     const updateposition = (evt: LeafletMouseEvent) => {
-        setposition("位置信息:" + evt.latlng.toString());
+        setposition(evt.latlng.toString());
     };
 
     return (

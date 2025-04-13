@@ -4,7 +4,16 @@ import store from "../store/index.ts";
 import { observer } from "mobx-react-lite";
 import Colorbar,{Range} from "./Colorbar.tsx";
 import { extendObservable, set } from "mobx";
-import {extent} from 'd3'
+import {extent, interpolate, interpolateTurbo, max, scaleSequential, contours, geoPath} from 'd3'
+
+declare module "leaflet" {
+  class ScalarField{
+    static fromASCIIJson: (data:FieldData) => any;
+  }
+  class canvasLayer{
+    static scalarField: (data:any) => any;
+  }
+}
 
 const CanvasOverlay = observer(() => {
   const map = store.map;
@@ -13,48 +22,27 @@ const CanvasOverlay = observer(() => {
     min:"",
     max:"",
   });
+  
   const [unit,setunit] = useState("mg/ml");
 
 
-  const renderCanvas = async () => {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d")!;
-    ctx.fillStyle = "rgb(255,0,0)";
-    ctx.fillRect(10, 10, 55, 50);
-    const url = canvas.toDataURL("png");
-  
-    const response = await fetch("/temp1.json");
-    const tempData: FieldData = await response.json();
+  const renderCanvas = async (map:L.Map) => {
+    const tempData: FieldData = await fetch("/temp2.json").then((res) =>
+      res.json()
+    ); 
+    const field = L.ScalarField.fromASCIIJson(tempData);
     //设置数据单位
     setunit("mg/ml");
     //设置数据范围
-    const tempArray:string[] = tempData.data.reduce((sum,el)=>{
-      return sum.concat(el);
-    }, []).filter(el=>el != tempData.nODATA);
-    const extentRange = extent(tempArray) as string[];
-    console.log(tempArray,extentRange);
     setRange({
-      min: extentRange[0],
-      max: extentRange[1],
-    })
-
-    const imageBounds: LatLngBoundsExpression = L.latLngBounds([
-      [tempData.yllcorner, tempData.xllcorner],
-      [
-        tempData.yllcorner + tempData.nrows * tempData.cellsize,
-        tempData.xllcorner + tempData.ncols * tempData.cellsize,
-      ],
-    ]);
-  
-    const layer = L.imageOverlay(url, imageBounds).addTo(map);
-    console.log(layer);
-  };
-
-  
-
+      min: field.range[0],
+      max: field.range[1],
+    });
+    layer.current = L.canvasLayer.scalarField(field).addTo(map);
+  }
   useEffect(() => {
     if(map){
-      renderCanvas();
+      renderCanvas(map);
     }
     if(layer.current){
       map.removeLayer(layer.current);

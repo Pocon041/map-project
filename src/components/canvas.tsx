@@ -22,12 +22,10 @@ const CanvasOverlay = observer(() => {
   const layer = useRef<L.ImageOverlay>(null);
   const Lmarker = useRef<L.Marker>(null);
   const marker = useRef<MarkerRefProps>(null)
-
   const [range,setRange] = useState<Range>({
     min:"",
     max:"",
   });
-  
   const [unit,setunit] = useState("mg/ml");
 
 
@@ -60,7 +58,10 @@ const CanvasOverlay = observer(() => {
           Lmarker.current = L.marker(e.latlng,{
             icon: icon,
             draggable: true,
-          }).addTo(map);
+          }).addTo(map).on('drag',(e:any) =>{
+            const value = field.valueAt(e.latlng.lng, e.latlng.lat);
+            marker.current?.init(value);
+          })
         }
       }
       //L.popup().setLatLng(e.latlng).setContent(html).openOn(map);
@@ -75,6 +76,9 @@ const CanvasOverlay = observer(() => {
     }
     if(layer.current){
       map.removeLayer(layer.current);
+    }
+    if(Lmarker.current){
+      
     }
   }, []);
   

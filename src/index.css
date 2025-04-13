@@ -96,13 +96,6 @@ body{
   position: relative;
 }
 
-.mapIcon::after{
-
-}
-
-.mapIcon::before{
-
-}
 
 .lat-lng-control{
   color: white;

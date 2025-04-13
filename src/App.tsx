@@ -7,7 +7,32 @@ window.d3 = d3;
 import CanvasOverlay from "./components/canvas.tsx";
 import "./assets/leaflet.canvaslayer.field.js";
 
+const MapData = [
+  {
+    name:'温度',
+    url: '/temp1.json',
+    unit: '℃'
+  },
+  {
+    name:'盐度',
+    url: '/temp2.json',
+    unit: 'mg/ml'
+  },
+  {
+    name:'叶绿素',
+    url: '/temp3.json',
+    unit: 'mol/ml'
+  },
+];
+export interface MapDataType {
+  name: string;
+  url: string;
+  unit: string;
+}
+
 export default function App() {
+  const currentDataKey: string = "温度";
+  const currentMapData = MapData.find(el => el.name === currentDataKey)!;
   const mapRef=useRef<HTMLDivElement>(null);
   const [mapReady,setMapReady] = useState(false);
   
@@ -46,9 +71,12 @@ export default function App() {
   return (
     <div className="relative">
       <div ref={mapRef} className="z-10 h-svh"></div>
-      {mapReady && <Location /> }
-      {mapReady && <CanvasOverlay/>}
+      {mapReady && (
+        <>
+          <Location />
+          <CanvasOverlay mapData={currentMapData}/>
+        </>
+      ) }
     </div>
-    
   );
 }

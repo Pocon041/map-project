@@ -26,6 +26,10 @@ type MarkerProps={
     value:string;
 }
 
+export type CloseMarker={
+    
+}
+
 export type MarkerRefProps={
     init:(data:string)=>void;
 }

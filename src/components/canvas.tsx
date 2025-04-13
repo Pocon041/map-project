@@ -7,6 +7,7 @@ import { extendObservable, set } from "mobx";
 import {extent, interpolate, interpolateTurbo, max, scaleSequential, contours, geoPath} from 'd3'
 import Marker, { MarkerRefProps } from "./Marker.tsx";
 import { createRoot } from "react-dom/client";
+import { MapDataType } from "@/App.tsx";
 
 declare module "leaflet" {
   class ScalarField{
@@ -17,7 +18,7 @@ declare module "leaflet" {
   }
 }
 
-const CanvasOverlay = observer(() => {
+const CanvasOverlay = observer(({mapData}: {mapData: MapDataType}) => {
   const map = store.map;
   const layer = useRef<L.ImageOverlay>(null);
   const Lmarker = useRef<L.Marker>(null);
@@ -30,12 +31,12 @@ const CanvasOverlay = observer(() => {
 
 
   const renderCanvas = async (map:L.Map) => {
-    const tempData: FieldData = await fetch("/temp2.json").then((res) =>
+    const tempData: FieldData = await fetch(mapData.url).then((res) =>
       res.json()
     ); 
     const field = L.ScalarField.fromASCIIJson(tempData);
     //设置数据单位
-    setunit("mg/ml");
+    setunit(mapData.unit);
     //设置数据范围
     setRange({
       min: field.range[0],
@@ -78,7 +79,7 @@ const CanvasOverlay = observer(() => {
       map.removeLayer(layer.current);
     }
     if(Lmarker.current){
-      
+      Lmarker.current?.remove()
     }
   }, []);
   

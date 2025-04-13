@@ -87,6 +87,23 @@ body{
     bottom: 31px;
   }
 
+.mapIcon {
+  white-space: nowrap;
+  width: auto !important;
+  height: auto !important;
+  margin-left: -5% !important;
+  margin-top: calc(100% + 10px) !important;
+  position: relative;
+}
+
+.mapIcon::after{
+
+}
+
+.mapIcon::before{
+
+}
+
 .lat-lng-control{
   color: white;
 }

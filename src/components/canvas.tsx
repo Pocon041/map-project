@@ -5,6 +5,8 @@ import { observer } from "mobx-react-lite";
 import Colorbar,{Range} from "./Colorbar.tsx";
 import { extendObservable, set } from "mobx";
 import {extent, interpolate, interpolateTurbo, max, scaleSequential, contours, geoPath} from 'd3'
+import Marker, { MarkerRefProps } from "./Marker.tsx";
+import { createRoot } from "react-dom/client";
 
 declare module "leaflet" {
   class ScalarField{
@@ -18,6 +20,9 @@ declare module "leaflet" {
 const CanvasOverlay = observer(() => {
   const map = store.map;
   const layer = useRef<L.ImageOverlay>(null);
+  const Lmarker = useRef<L.Marker>(null);
+  const marker = useRef<MarkerRefProps>(null)
+
   const [range,setRange] = useState<Range>({
     min:"",
     max:"",
@@ -38,7 +43,31 @@ const CanvasOverlay = observer(() => {
       min: field.range[0],
       max: field.range[1],
     });
-    layer.current = L.canvasLayer.scalarField(field).addTo(map);
+    const _layer = L.canvasLayer.scalarField(field).addTo(map);
+  
+    _layer.on('click',(e:any) => {
+      if(e.value){
+        if(Lmarker.current){
+          Lmarker.current.setLatLng(e.latlng);
+          marker.current?.init(e.value);
+        }else{
+          const html = document.createElement('div');
+          createRoot(html).render(<Marker ref={marker} value={e.value}/>);
+          const icon = L.divIcon({
+            className:"mapIcon",
+            html: html,
+          });
+          Lmarker.current = L.marker(e.latlng,{
+            icon: icon,
+            draggable: true,
+          }).addTo(map);
+        }
+      }
+      //L.popup().setLatLng(e.latlng).setContent(html).openOn(map);
+    })
+
+    layer.current = _layer;
+    map.fitBounds(_layer.getBounds());
   }
   useEffect(() => {
     if(map){

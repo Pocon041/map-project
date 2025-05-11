@@ -1,86 +1,87 @@
-// App.tsx
 import React, { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import * as d3 from "d3";
 window.d3 = d3;
 import "./assets/leaflet.canvaslayer.field.js";
-import Location from "./components/Location.tsx";
-import store from "./store/index.ts";
-import MapCanvas from "./components/canvas.tsx";
-import SwitchPanel from "./components/SwitchPanel.tsx"; // 引入 SwitchPanel 组件
-import Timeline from "./components/TimeLine.tsx";
-
+import Location from "./components/Location";
+import CanvasRender from "./components/canvas";
+import store from "./store";
+import Timeline from "./components/TimeLine";
+import Resource from "./components/Resource";
 const MapData: MapDataType[] = [
   {
     name: "温度",
-    time: '4-19',
+    time: "4-19",
     url: "/temp1.json",
-    unit: "°C",
+    unit: "℃",
   },
   {
     name: "盐度",
-    time: '4-20',
-    url: "temp2.json",
+    time: "4-20",
+    url: "/temp2.json",
     unit: "mg/ml",
   },
   {
     name: "叶绿素",
-    time: '4-21',
-    url: "temp3.json",
-    unit: "mg/ml",
+    time: "4-21",
+    url: "/temp2.json",
+    unit: "mol/ml",
   },
   {
-    name: "温度",
-    time: '4-22',
+    name: "温度2",
+    time: "4-22",
     url: "/temp1.json",
-    unit: "°C",
+    unit: "℃",
   },
   {
-    name: "盐度",
-    time: '4-23',
-    url: "temp2.json",
+    name: "盐度2",
+    time: "4-23",
+    url: "/temp2.json",
     unit: "mg/ml",
   },
   {
-    name: "叶绿素",
-    time: '4-24',
-    url: "temp3.json",
-    unit: "mg/ml",
+    name: "叶绿素2",
+    time: "4-24",
+    url: "/temp2.json",
+    unit: "mol/ml",
   },
 ];
-
 export interface MapDataType {
   name: string;
-  time: string;
   url: string;
   unit: string;
+  time: string;
 }
-
 const Default_Time_Index = 0;
 
 export default function App() {
-  const [currentTimeIndex, setCurrentTimeindex] = useState(Default_Time_Index);
+  // const currentDataKey: string = "温度";
+  const [currentTimeIndex, setCurrentTimeIndex] = useState(Default_Time_Index);
   const currentMapData = MapData[currentTimeIndex];
   const mapRef = useRef<HTMLDivElement>(null);
   const [mapReady, setMapReady] = useState(false);
-
   useEffect(() => {
     if (mapRef.current) {
       const _map = L.map(mapRef.current, {
         zoomControl: false,
         attributionControl: false,
       }).setView([36, 120], 5);
-
       store.setMap(_map);
-      setMapReady(true); // 确保此处正确设置 mapReady 为 true
-      console.log("Map initialized and mapReady set to true"); // 调试输出
 
-      L.control.scale({ imperial: false, position: "bottomright" }).addTo(_map);
+      setMapReady(true);
+
+      L.control
+        .scale({
+          imperial: false,
+          position: "bottomright",
+        })
+        .addTo(_map);
       L.control.zoom({ position: "bottomright" }).addTo(_map);
-
       L.tileLayer(
         "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-        { attribution: "" }
+        {
+          attribution: "",
+        }
       ).addTo(_map);
 
       return () => {
@@ -89,30 +90,25 @@ export default function App() {
     }
   }, []);
 
-  console.log("MapData:", MapData); // 调试输出 MapData
-  console.log("mapReady:", mapReady); // 调试输出 mapReady 状态
-
   return (
-    <div className="relative h-screen w-screen"> {/* 确保根容器有 relative 定位 */}
+    <div className="relative">
       <div ref={mapRef} className="z-10 h-svh"></div>
-      {mapReady && <Location />}
-      {mapReady && <MapCanvas mapData={currentMapData} />}
-      <Timeline
-        defaultIndex={Default_Time_Index}
-        data={MapData}
-        updateIndex={setCurrentTimeindex}
-      />
       {mapReady && (
-        <SwitchPanel
-          data={MapData}
-          updateIndex={setCurrentTimeindex}
-          currentIndex={currentTimeIndex}
-        />
+        <>
+          <Location />
+          <CanvasRender mapData={currentMapData} />
+        </>
       )}
+      <Timeline
+        defalutIndex={Default_Time_Index}
+        data={MapData}
+        updateIndex={setCurrentTimeIndex}
+      ></Timeline>
+      <Resource
+        defalutIndex={Default_Time_Index}
+        source={MapData}
+        update={setCurrentTimeIndex}
+      />
     </div>
   );
-}
-
-function e1(value: { name: string; url: string; uint: string; unit?: undefined; } | { name: string; url: string; unit: string; uint?: undefined; }, index: number, obj: ({ name: string; url: string; uint: string; unit?: undefined; } | { name: string; url: string; unit: string; uint?: undefined; })[]): value is { name: string; url: string; uint: string; unit?: undefined; } | { name: string; url: string; unit: string; uint?: undefined; } {
-  throw new Error("Function not implemented.");
 }

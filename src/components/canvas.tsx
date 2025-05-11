@@ -85,9 +85,10 @@ const CanvasRender = observer(({ mapData }: { mapData: MapDataType }) => {
       }
       if (Lmarker.current) {
         Lmarker.current.remove();
+        Lmarker.current = null;
       }
     };
-  }, []);
+  }, [mapData]);
 
   const closeMarker = () => {
     if (Lmarker.current) {

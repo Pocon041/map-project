@@ -78,14 +78,16 @@ export default function App() {
   const currentMapData = MapData[currentTimeIndex];
   const mapRef = useRef<HTMLDivElement>(null);
   const [mapReady, setMapReady] = useState(false);
+  const [lngLat, setLngLat] = useState<{ lng: string | null; lat: string | null }>({ lng: null, lat: null });
 
   useEffect(() => {
     if (mapRef.current) {
+      let handler: Cesium.ScreenSpaceEventHandler | null = null;
+      let viewer: Viewer | null = null;
       (async () => {
-        // 配置Cesium ion访问令牌（如果需要）
         Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI4YjMzMjk4Ni0wYjA0LTQ2ZjctYmVkYi05MjQzZmMxNmJkNzAiLCJpZCI6MzAxNDAzLCJpYXQiOjE3NDY5NDc5MjN9.IPEAnx-qZ2BXRfol7pxBD7Sn7mSlBaZf1K7NLcfiIAE';
 
-        const viewer = new Cesium.Viewer(mapRef.current!, {
+        viewer = new Cesium.Viewer(mapRef.current!, {
           shouldAnimate: true,
           animation: false,
           baseLayerPicker: false,
@@ -97,31 +99,42 @@ export default function App() {
           selectionIndicator: true,
           timeline: false,
           navigationHelpButton: true,
-          scene3DOnly: true, // 强制3D模式
-          shadows: true, // 启用阴影
-          terrainShadows: Cesium.ShadowMode.ENABLED, // 地形阴影
-          mapProjection: new Cesium.WebMercatorProjection(), // 使用Web墨卡托投影
-          navigationInstructionsInitiallyVisible: false, // 隐藏导航提示
+          scene3DOnly: true,
+          shadows: true,
+          terrainShadows: Cesium.ShadowMode.ENABLED,
+          mapProjection: new Cesium.WebMercatorProjection(),
+          navigationInstructionsInitiallyVisible: false,
         });
-
-
 
         store.setMap(viewer);
         setMapReady(true);
 
-        return () => {
-          viewer.destroy();
-        };
+        // 监听鼠标移动事件
+        handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+        handler.setInputAction((movement: any) => {
+          const cartesian = viewer!.camera.pickEllipsoid(movement.endPosition, viewer!.scene.globe.ellipsoid);
+          if (cartesian) {
+            const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+            const lng = Cesium.Math.toDegrees(cartographic.longitude).toFixed(6);
+            const lat = Cesium.Math.toDegrees(cartographic.latitude).toFixed(6);
+            setLngLat({ lng, lat });
+          } else {
+            setLngLat({ lng: null, lat: null });
+          }
+        }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
       })();
+      // 清理
+      return () => {
+        if (handler) handler.destroy();
+        if (viewer) viewer.destroy();
+      };
     }
   }, []);
-  console.log("MapData:", MapData); // 调试输出 MapData
-  console.log("mapReady:", mapReady); // 调试输出 mapReady 状态
 
   return (
-    <div className="relative h-screen w-screen"> {/* 确保根容器有 relative 定位 */}
+    <div className="relative h-screen w-screen">
       <div ref={mapRef} className="z-10 h-svh"></div>
-      {mapReady && <Location />}
+      {mapReady && <Location lng={lngLat.lng} lat={lngLat.lat} />}
       {mapReady && <HeatmapLayer mapData={currentMapData} />}
       <Timeline
         defaultIndex={Default_Time_Index}

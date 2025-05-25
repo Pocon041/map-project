@@ -1,47 +1,53 @@
-import { MapDataType } from "@/App";
-import { forwardRef, useImperativeHandle, useState } from "react";
-import { X } from "lucide-react";
+import React, { forwardRef, useState, useImperativeHandle, RefObject } from "react";
 
 const Marker = forwardRef<MarkerRefProps, MarkerProps>((props, ref) => {
-  const [value, setValue] = useState(props.value);
-  const [name, setName] = useState(props.name);
-  const [unit, setUnit] = useState(props.unit);
-  useImperativeHandle(
-    ref,
-    () => {
-      return {
+    useImperativeHandle(ref, () => ({
         init(value: string) {
-          setValue(value);
+            // 可选：如果你需要外部控制，可以加 setState
         },
-      };
-    },
-    []
-  );
-  const handleClose = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    props.close();
-  };
-  return (
-    <div className="relative top-1.5 left-1.5">
-      <div className="px-4 pt-8 pb-3 bg-white text-black whitespace-nowrap absolute -translate-x-1/2 top-[-30px] after:content-[''] after:absolute after:border-l-transparent after:border-r-transparent after:border-b-transparent after:border-t-white  after:border-4  after:top-full after:left-1/2 after:-translate-x-1/2">
-        {name}: {value} {unit}
-        <X
-          className="absolute top-2 right-2 size-5 hover:text-sky-700"
-          onClick={handleClose}
-        ></X>
-      </div>
-    </div>
-  );
+        close() {
+            if (props.onClose) {
+                props.onClose();
+            }
+        }
+    }), [props]);
+
+    const handleClose = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.stopPropagation();
+        if (typeof ref === 'object' && ref !== null && 'current' in ref) {
+            ref.current?.close();
+        }
+    };
+
+    return (
+        <div style={props.style} className="absolute">
+            <div className="px-2 py-1 bg-white text-gray-700 font-sans rounded-lg shadow-sm border border-gray-200 absolute -translate-x-1/2 top-[-30px] after:content-[''] after:absolute 
+            after:border-l-transparent after:border-r-transparent after:border-b-transparent after:border-t-white after:border-4 after:top-full after:left-1/2 
+            after:-translate-x-1/2 flex items-center space-x-2">
+                <span className="text-sm font-bold">{props.name}:</span>
+                <span className="text-sm">{props.value}{props.unit}</span>
+                <button
+                    className="ml-1 w-4 h-4 flex items-center justify-center text-red-600 hover:text-red-800 focus:outline-none transition duration-150 ease-in-out rounded-full border-2 border-red-400"
+                    onClick={handleClose}
+                >
+                    X
+                </button>
+            </div>
+        </div>
+    );
 });
 
 export default Marker;
 
-type MarkerProps = {
-  value: string;
-  name: string;
-  unit: string;
-  close: () => void;
-};
+interface MarkerProps {
+    value: string;
+    unit: string;
+    name: string;
+    style?: React.CSSProperties;
+    onClose?: () => void;
+}
+
 export type MarkerRefProps = {
-  init: (data: string) => void;
+    init: (data: string) => void;
+    close: () => void;
 };

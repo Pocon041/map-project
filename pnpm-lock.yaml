@@ -20,6 +20,9 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.0.14
         version: 4.0.14(vite@6.2.1(@types/node@22.13.10)(jiti@2.4.2)(lightningcss@1.29.2))
+      cesium:
+        specifier: ^1.129.0
+        version: 1.129.0
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
